@@ -1,0 +1,48 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      - name: No service role in client
+        run: npm run check:no-service-key
+
+      - name: SEO lint
+        run: npm run lint:seo
+
+      - name: Schema lint
+        run: npm run lint:schema
+
+      - name: Kernel tests + coverage ≥90%
+        run: npm run test:coverage --workspace packages/costing-engine
+
+      - name: Web unit tests (Stripe webhooks)
+        run: npm run test --workspace apps/web
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Build web
+        run: npm run build --workspace apps/web
+        env:
+          NEXT_PUBLIC_SITE_URL: https://pixplat.com
+          NEXT_PUBLIC_BASE_PATH: /foodcost
+          NEXT_PUBLIC_SUPABASE_URL: https://example.supabase.co
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: anon-placeholder
+          SUPABASE_SERVICE_ROLE_KEY: service-placeholder

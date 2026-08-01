@@ -1,0 +1,12 @@
+{
+  "crons": [
+    {
+      "path": "/foodcost/api/cron/trial",
+      "schedule": "0 12 * * *"
+    },
+    {
+      "path": "/foodcost/api/cron/purge",
+      "schedule": "0 13 * * *"
+    }
+  ]
+}

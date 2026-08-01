@@ -1,0 +1,7 @@
+Dish,Food Cost,Selling Price (ex. tax),Food Cost %,Target %,Status
+Maison burger,2.42,9.90,24.4%,30%,OK
+Fries,0.85,4.50,18.9%,30%,OK
+Caesar salad,2.10,8.00,26.3%,30%,OK
+House lemonade,0.40,3.50,11.4%,30%,OK
+,,,,,
+Menu average,,,20.3%,30%,OK

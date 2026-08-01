@@ -1,0 +1,11 @@
+Ingredient,Purchase Qty,Purchase Unit,Purchase Price,Used Qty,Used Unit,Yield %,Cost of Used Qty
+Ground beef 80/20,1000,g,8.50,150,g,100,1.28
+Burger bun,12,unit,6.00,1,unit,100,0.50
+Cheddar slice,500,g,7.20,20,g,100,0.29
+Lettuce,1,unit,1.80,0.1,unit,80,0.23
+Tomato,1000,g,3.50,30,g,90,0.12
+,,,,,,,
+,,,,,,Total food cost,2.42
+,,,,,,Selling price (ex. tax),9.90
+,,,,,,Food cost %,24.4%
+,,,,,,Target food cost %,30%

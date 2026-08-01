@@ -1,0 +1,96 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+}
+
+body {
+  background-color: theme("colors.body");
+  color: theme("colors.text");
+  font-feature-settings: "ss01";
+  letter-spacing: -0.01em;
+}
+
+/* Keyboard focus: visible ring on interactive controls (Phase 6 a11y). */
+:focus {
+  outline: none;
+}
+:focus-visible {
+  outline: 2px solid theme("colors.accent.text");
+  outline-offset: 2px;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+.focus\:not-sr-only:focus {
+  position: static;
+  width: auto;
+  height: auto;
+  padding: inherit;
+  margin: inherit;
+  overflow: visible;
+  clip: auto;
+  white-space: normal;
+}
+
+@layer components {
+  .container-bringer {
+    @apply mx-auto w-full max-w-container px-6;
+  }
+
+  .btn-accent {
+    @apply inline-flex items-center justify-center rounded-xs bg-accent px-6 py-3.5 text-[15px] font-semibold text-heading transition-opacity hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-text;
+  }
+
+  .btn-ghost {
+    @apply inline-flex items-center justify-center rounded-xs border border-border px-6 py-3.5 text-[15px] font-semibold text-heading transition-colors hover:border-border-accent focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-text;
+  }
+
+  .input {
+    @apply mt-1 w-full rounded-xs border border-border bg-body px-3 py-2 text-sm text-heading outline-none focus:border-border-accent focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-text;
+  }
+}
+
+/* Free "Download PDF" = print-to-PDF. Toggling `.printing-calc` on <body>
+   isolates the calculator block using the visibility trick. */
+@media print {
+  :root {
+    color-scheme: light;
+  }
+  body.printing-calc {
+    background: #fff !important;
+    color: #000 !important;
+  }
+  body.printing-calc * {
+    visibility: hidden;
+  }
+  body.printing-calc #calculator,
+  body.printing-calc #calculator * {
+    visibility: visible;
+    color: #000 !important;
+    background: #fff !important;
+    border-color: #ccc !important;
+  }
+  body.printing-calc #calculator {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+  }
+  body.printing-calc #calculator button,
+  body.printing-calc #calculator a {
+    display: none !important;
+  }
+}
