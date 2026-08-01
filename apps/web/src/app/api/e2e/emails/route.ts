@@ -1,8 +1,12 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { clearStubEmails, getStubEmails } from "@/lib/email";
+import { e2eDisabledResponse } from "@/lib/e2e-guard";
 
 /** E2E helper: inspect in-memory stub emails (when RESEND_API_KEY is unset). */
 export async function GET(request: NextRequest) {
+  const disabled = e2eDisabledResponse();
+  if (disabled) return disabled;
+
   const secret = process.env.E2E_SETUP_SECRET;
   const provided =
     request.headers.get("x-e2e-secret") ?? request.nextUrl.searchParams.get("secret");

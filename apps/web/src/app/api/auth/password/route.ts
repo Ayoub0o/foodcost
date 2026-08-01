@@ -2,6 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 import { createClient as createAdminClient } from "@supabase/supabase-js";
 import type { Database } from "@/lib/supabase/database.types";
+import { clientIpFromHeaders, rateLimit } from "@/lib/rate-limit";
 
 /**
  * Password sign-in that sets auth cookies on the HTTP redirect response.
@@ -18,6 +19,15 @@ export async function POST(request: NextRequest) {
 
   const fail = () =>
     NextResponse.redirect(new URL(`${basePath}/${locale}/login?error=credentials`, origin), 303);
+
+  const ip = clientIpFromHeaders(request.headers);
+  const limited = rateLimit({ key: `auth:password:${ip}`, limit: 20, windowMs: 15 * 60_000 });
+  if (!limited.ok) {
+    return NextResponse.redirect(
+      new URL(`${basePath}/${locale}/login?error=rate`, origin),
+      303,
+    );
+  }
 
   if (!email || password.length < 6) return fail();
 

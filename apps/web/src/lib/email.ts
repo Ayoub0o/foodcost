@@ -18,7 +18,6 @@ export interface StubEmail {
 }
 
 declare global {
-  // eslint-disable-next-line no-var
   var __foodcostEmailStubs: StubEmail[] | undefined;
 }
 

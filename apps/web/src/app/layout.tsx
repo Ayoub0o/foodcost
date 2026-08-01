@@ -1,9 +1,16 @@
+import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { getLocale } from "next-intl/server";
 import { Inter } from "next/font/google";
+import { allowSearchIndexing } from "@/lib/env";
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"], display: "swap", variable: "--font-inter" });
+
+export async function generateMetadata(): Promise<Metadata> {
+  if (allowSearchIndexing()) return {};
+  return { robots: { index: false, follow: false } };
+}
 
 /**
  * Next.js 15.5 requires <html> and <body> in the root layout (not only under

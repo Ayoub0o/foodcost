@@ -1,11 +1,13 @@
 "use server";
 
+import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
 import { createClient, createServiceRoleClient } from "@/lib/supabase/server";
 import { requirePlatformAdmin, writeAuditLog } from "@/lib/admin";
 import { sendSupportEmail } from "@/lib/email";
 import { appOrigin, foodcostBasePath } from "@/lib/stripe";
 import { routing } from "@/i18n/routing";
+import { clientIpFromHeaders, rateLimit } from "@/lib/rate-limit";
 import type { AppLocale, TicketStatus } from "@/lib/supabase/database.types";
 
 function resolveLocale(value: FormDataEntryValue | null): AppLocale {
@@ -77,6 +79,14 @@ export async function createSupportTicket(formData: FormData) {
   const category = String(formData.get("category") ?? "question");
   const honeypot = String(formData.get("website") ?? "");
   if (honeypot) return { ok: true as const }; // bot
+
+  const hdrs = await headers();
+  const limited = rateLimit({
+    key: `support:create:${clientIpFromHeaders(hdrs)}`,
+    limit: 8,
+    windowMs: 60 * 60_000,
+  });
+  if (!limited.ok) throw new Error("Rate limited");
 
   const supabase = await createClient();
   const {

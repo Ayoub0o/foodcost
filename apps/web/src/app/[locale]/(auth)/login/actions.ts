@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 import { routing } from "@/i18n/routing";
+import { clientIpFromHeaders, rateLimit } from "@/lib/rate-limit";
 
 const emailSchema = z.string().trim().email();
 
@@ -60,8 +61,17 @@ export async function signInWithMagicLink(formData: FormData) {
   }
   const email = parsed.data;
 
-  const supabase = await createClient();
   const hdrs = await headers();
+  const limited = rateLimit({
+    key: `auth:magic:${clientIpFromHeaders(hdrs)}`,
+    limit: 10,
+    windowMs: 15 * 60_000,
+  });
+  if (!limited.ok) {
+    redirect(`/${locale}/login?error=rate`);
+  }
+
+  const supabase = await createClient();
   const callback = `${siteOrigin(hdrs)}${basePath()}/api/auth/callback?next=${encodeURIComponent(next)}`;
 
   const { error } = await supabase.auth.signInWithOtp({

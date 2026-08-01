@@ -1,11 +1,15 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createServiceRoleClient } from "@/lib/supabase/server";
+import { e2eDisabledResponse } from "@/lib/e2e-guard";
 
 /**
  * E2E helper: prove Stripe webhook event ids are replay-safe via the unique PK
  * on `stripe_webhook_events` (same guarantee the webhook route uses).
  */
 export async function POST(request: NextRequest) {
+  const disabled = e2eDisabledResponse();
+  if (disabled) return disabled;
+
   const secret = process.env.E2E_SETUP_SECRET;
   const provided =
     request.headers.get("x-e2e-secret") ?? request.nextUrl.searchParams.get("secret");

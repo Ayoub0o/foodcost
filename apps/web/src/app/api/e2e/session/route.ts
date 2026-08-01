@@ -2,12 +2,16 @@ import { NextResponse, type NextRequest } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 import { createClient } from "@supabase/supabase-js";
 import type { Database } from "@/lib/supabase/database.types";
+import { e2eDisabledResponse } from "@/lib/e2e-guard";
 
 /**
  * E2E-only helper: mint a real session and Set-Cookie it via the browser.
  * Query: secret (required), email?, password?, admin=1, redirect?
  */
 export async function GET(request: NextRequest) {
+  const disabled = e2eDisabledResponse();
+  if (disabled) return disabled;
+
   const secret = process.env.E2E_SETUP_SECRET;
   const provided = request.nextUrl.searchParams.get("secret");
   if (!secret || !provided || provided !== secret) {
