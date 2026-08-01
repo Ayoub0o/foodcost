@@ -1,6 +1,7 @@
 import createIntlMiddleware from "next-intl/middleware";
 import type { NextRequest } from "next/server";
 import { routing } from "./i18n/routing";
+import { allowSearchIndexing } from "./lib/env";
 import { updateSession } from "./lib/supabase/middleware";
 
 const intlMiddleware = createIntlMiddleware(routing);
@@ -29,6 +30,11 @@ export default async function middleware(request: NextRequest) {
 
   if (needsSessionRefresh(request.nextUrl.pathname)) {
     await updateSession(request, response);
+  }
+
+  // Request-time noindex for staging/preview (build-time robots metadata is insufficient).
+  if (!allowSearchIndexing()) {
+    response.headers.set("X-Robots-Tag", "noindex, nofollow");
   }
 
   return response;

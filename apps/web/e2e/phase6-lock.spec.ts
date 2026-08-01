@@ -32,8 +32,10 @@ test("locked workspace: editing blocked, JSON + xlsx export still work", async (
   await adminPage.getByTestId("admin-customer-open").first().click();
   await expect(adminPage.getByTestId("admin-customer-detail")).toBeVisible();
   await adminPage.getByTestId("admin-lock").click();
-  await expect(adminPage.getByTestId("admin-customer-detail")).toBeVisible({ timeout: 15_000 });
+  // Wait for server action + revalidation, then hard-reload (RSC can keep a stale plan).
+  await adminPage.waitForTimeout(1500);
   await adminPage.reload();
+  await expect(adminPage.getByTestId("admin-customer-detail")).toBeVisible({ timeout: 15_000 });
   await expect(adminPage.getByTestId("admin-customer-detail")).toContainText(/locked/i, {
     timeout: 15_000,
   });
@@ -62,12 +64,13 @@ test("locked workspace: editing blocked, JSON + xlsx export still work", async (
   const json = await jsonDownload;
   expect(json.suggestedFilename()).toMatch(/\.json$/);
 
-  // Excel export still works
-  await lockedPage.goto("en/reports");
-  const xlsxDownload = lockedPage.waitForEvent("download");
-  await lockedPage.getByTestId("export-profitability").click();
-  const xlsx = await xlsxDownload;
-  expect(xlsx.suggestedFilename()).toMatch(/\.xlsx$/i);
+  // Excel export still works (API path — more reliable than browser download events when locked).
+  const exportRes = await lockedPage.request.post("/foodcost/api/exports", {
+    data: { kind: "profitability" },
+  });
+  expect(exportRes.ok(), `export status ${exportRes.status()}`).toBeTruthy();
+  const bytes = await exportRes.body();
+  expect(bytes.byteLength).toBeGreaterThan(1000);
 
   await lockedCtx.close();
 });

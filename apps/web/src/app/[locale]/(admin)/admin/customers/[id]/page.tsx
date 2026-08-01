@@ -4,6 +4,8 @@ import { PageHeader } from "@/components/app/PageHeader";
 import { createServiceRoleClient } from "@/lib/supabase/server";
 import { extendTrial, setWorkspacePlan, startImpersonation } from "../actions";
 
+export const dynamic = "force-dynamic";
+
 export default async function AdminCustomerDetailPage({
   params,
 }: {

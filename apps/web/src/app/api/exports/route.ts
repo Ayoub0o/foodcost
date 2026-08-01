@@ -23,14 +23,29 @@ export async function POST(request: NextRequest) {
   }
   const kind = kindRaw as Exclude<ExportKind, "tech_sheet_pdf">;
 
-  const { data: memberships } = await supabase
+  let workspaceId = body.workspaceId;
+  if (!workspaceId) {
+    const { data: memberships } = await supabase
+      .from("memberships")
+      .select("workspace_id")
+      .eq("user_id", user.id)
+      .order("created_at", { ascending: true })
+      .limit(1);
+    workspaceId = memberships?.[0]?.workspace_id;
+  }
+  if (!workspaceId) {
+    return NextResponse.json({ error: "no workspace" }, { status: 400 });
+  }
+
+  // Exports remain available in every plan state including locked (PRD guarantee).
+  const { data: member } = await supabase
     .from("memberships")
     .select("workspace_id")
     .eq("user_id", user.id)
-    .limit(1);
-  const workspaceId = body.workspaceId ?? memberships?.[0]?.workspace_id;
-  if (!workspaceId) {
-    return NextResponse.json({ error: "no workspace" }, { status: 400 });
+    .eq("workspace_id", workspaceId)
+    .maybeSingle();
+  if (!member) {
+    return NextResponse.json({ error: "forbidden" }, { status: 403 });
   }
 
   const { data: log, error: logError } = await supabase

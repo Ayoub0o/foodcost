@@ -67,7 +67,8 @@ export async function setWorkspacePlan(formData: FormData) {
   const nextPlan = plan as WorkspacePlan;
 
   const db = createServiceRoleClient();
-  await db.from("workspaces").update({ plan: nextPlan }).eq("id", workspaceId);
+  const { error } = await db.from("workspaces").update({ plan: nextPlan }).eq("id", workspaceId);
+  if (error) throw new Error(error.message);
 
   await writeAuditLog({
     actorUserId: admin.userId,
@@ -77,6 +78,7 @@ export async function setWorkspacePlan(formData: FormData) {
     meta: { plan: nextPlan },
   });
 
+  revalidatePath(`/${locale}/admin/customers`);
   revalidatePath(`/${locale}/admin/customers/${workspaceId}`);
   revalidatePath(`/${locale}/admin/audit`);
 }

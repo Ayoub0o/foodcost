@@ -8,6 +8,7 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"], display: "swap", variable: "--font-inter" });
 
 export async function generateMetadata(): Promise<Metadata> {
+  // Defense in depth with middleware X-Robots-Tag (request-time).
   if (allowSearchIndexing()) return {};
   return { robots: { index: false, follow: false } };
 }
