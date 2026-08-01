@@ -22,7 +22,8 @@ Reason: core build/tests/marketing/runtime checks pass and handoff docs exist, b
 | `58e39bd` | fix(security): health, headers, rate limits, staging noindex, E2E route gate |
 | `15d0806` | chore(tooling): env sync, ESLint, Node pin, Docker, CI gates |
 | `8fb030f` | feat(ops): post-deploy smoke-test script |
-| *(pending)* | fix(admin): service-role client + lock E2E stability; robots dynamic; docs |
+| `19c6b9d` | fix(admin): service-role client + lock/export E2E; robots request-time |
+| `55288f4` | docs(ops): DEPLOYMENT.md + PREFLIGHT_REPORT.md |
 
 ---
 
