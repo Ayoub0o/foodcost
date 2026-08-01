@@ -1,0 +1,15 @@
+node_modules
+.git
+.next
+**/node_modules
+**/.next
+apps/web/.env*
+.env
+.env.local
+**/.env.local
+coverage
+playwright-report
+test-results
+bringer
+*.md
+!README.md

@@ -23,6 +23,9 @@ jobs:
       - name: No service role in client
         run: npm run check:no-service-key
 
+      - name: Env example sync
+        run: npm run check:env
+
       - name: SEO lint
         run: npm run lint:seo
 
@@ -32,8 +35,11 @@ jobs:
       - name: Kernel tests + coverage ≥90%
         run: npm run test:coverage --workspace packages/costing-engine
 
-      - name: Web unit tests (Stripe webhooks)
+      - name: Web unit tests
         run: npm run test --workspace apps/web
+
+      - name: Lint web
+        run: npm run lint --workspace apps/web
 
       - name: Typecheck
         run: npm run typecheck
@@ -46,3 +52,4 @@ jobs:
           NEXT_PUBLIC_SUPABASE_URL: https://example.supabase.co
           NEXT_PUBLIC_SUPABASE_ANON_KEY: anon-placeholder
           SUPABASE_SERVICE_ROLE_KEY: service-placeholder
+          FOODCOST_ENV: production
