@@ -10,6 +10,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  output: "standalone",
   // FoodCost is served under the /foodcost subdirectory of pixplat.com to inherit
   // the domain's authority and backlinks (PRD hard rule). A reverse proxy may
   // strip this in some deploys; keep it configurable via env.
